@@ -96,7 +96,7 @@ App = {
         $newTaskTemplate.find("input")
                         .prop("name", taskID)
                         .prop("checked", taskCompleted)
-                        // .on("click", App.toggleCompleted)
+                        .on("click", App.toggleCompleted)
 
         // Display task in correct order
         if (taskCompleted) {
@@ -112,6 +112,13 @@ App = {
       App.setLoading(true);
       const content = $("#newTask").val();
       await App.todoList.createTask(content, {from: App.account});
+      window.location.reload();
+    },
+
+    toggleCompleted: async(e) => {
+      App.setLoading(true);
+      const taskID = e.target.name;
+      await App.todoList.toggleCompleted(taskID, {from: App.account});
       window.location.reload();
     },
 

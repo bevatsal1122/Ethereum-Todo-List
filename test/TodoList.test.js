@@ -7,7 +7,7 @@ contract("TodoList", (accounts) => {
       this.todoList = await TodoList.deployed();
    })
 
-   it("Deploys successfully", async() => {
+   it("deploys successfully", async() => {
       const address = await this.todoList.address;
       assert.notEqual(address, 0x0)
       assert.notEqual(address, '')
@@ -15,7 +15,7 @@ contract("TodoList", (accounts) => {
       assert.notEqual(address, undefined)
    });
 
-   it("Lists tasks", async() => {
+   it("lists tasks", async() => {
       const taskCount = await this.todoList.taskCount();
       const task = await this.todoList.tasks(taskCount);
       assert.equal(task.ID.toNumber(), taskCount.toNumber())
@@ -24,7 +24,7 @@ contract("TodoList", (accounts) => {
       assert.equal(task.ID.toNumber(), 1);
    })
 
-   it("Creates tasks", async() => {
+   it("creates tasks", async() => {
       const result = await this.todoList.createTask("Software Development");
       const taskCount = await this.todoList.taskCount();
       assert.equal(taskCount.toNumber(), 2)
@@ -32,5 +32,14 @@ contract("TodoList", (accounts) => {
       assert.equal(event.ID.toNumber(), 2)
       assert.equal(event.content, "Software Development")
       assert.equal(event.completed, false)
+   })
+
+   it("toggles task completion", async() => {
+      const result = await this.todoList.toggleCompleted(1);
+      const task = await this.todoList.tasks(1);
+      assert.equal(task.completed, true)
+      const event = result.logs[0].args;
+      assert.equal(event.ID.toNumber(), 1)
+      assert.equal(event.completed, true)
    })
 })

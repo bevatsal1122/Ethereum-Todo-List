@@ -18,6 +18,11 @@ contract TodoList {
       bool completed
    );
 
+   event TaskCompleted(
+      uint ID,
+      bool completed
+   );
+
    constructor() public {
       createTask("Hello!! I am Vatsal");
    }
@@ -28,4 +33,10 @@ contract TodoList {
       emit TaskCreated(taskCount, _content, false);
    }
 
+   function toggleCompleted(uint _ID) public {
+      Task memory _task = tasks[_ID];
+      _task.completed = !(_task.completed);
+      tasks[_ID] = _task;
+      emit TaskCompleted(_ID, _task.completed);
+   }
 }
