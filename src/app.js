@@ -1,4 +1,5 @@
 App = {
+    loading: false,
     contracts: {},
 
     load: async() => {
@@ -56,8 +57,67 @@ App = {
     },
 
     render: async() => {
+      // Prevent mutiple times rendering
+      if (App.loading) {
+        return
+      }
+
+      // Update App loading state
+      App.setLoading(true);
+
       // Render Account
       $("#account").html(App.account);
+
+      // Render all tasks
+      await App.renderTasks();
+
+      // Update App loading state
+      App.setLoading(false);
+    },
+
+    renderTasks: async() => {
+      // Load total taskCount
+      const taskCount = await App.todoList.taskCount();
+      const $taskTemplate = $(".taskTemplate");
+      // console.log(taskCount);
+
+      // Render each task with new task template
+      for (var i=1; i<=taskCount; ++i) {
+        // Fetching task data
+        const task = await App.todoList.tasks(i);
+        const taskID = task[0].toNumber();
+        const taskContent = task[1];
+        const taskCompleted = task[2];
+
+        const $newTaskTemplate = $taskTemplate.clone()
+        $newTaskTemplate.find(".content").html(taskContent);
+        $newTaskTemplate.find("input")
+                        .prop("name", taskID)
+                        .prop("checked", taskCompleted)
+                        // .on("click", App.toggleCompleted)
+
+        // Display task in correct order
+        if (taskCompleted) {
+          $("#completedTaskList").append($newTaskTemplate);
+        } else {
+          $("#taskList").append($newTaskTemplate);
+        }
+        console.log($newTaskTemplate)
+        $newTaskTemplate.show();
+      }
+    },
+
+    setLoading: async(boolean) => {
+      App.loading = boolean;
+      const loader = $("#loader");
+      const content = $("#content");
+      if (boolean) {
+        loader.show();
+        content.hide();
+      } else {
+        loader.hide();
+        content.show();
+      }
     }
 
 }
