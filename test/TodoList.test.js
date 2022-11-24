@@ -1,3 +1,5 @@
+const { assert } = require("chai");
+
 const TodoList = artifacts.require("TodoList.sol");
 
 contract("TodoList", (accounts) => {
@@ -20,5 +22,15 @@ contract("TodoList", (accounts) => {
       assert.equal(task.content, "Hello!! I am Vatsal")
       assert.equal(task.completed, false);
       assert.equal(task.ID.toNumber(), 1);
+   })
+
+   it("Creates tasks", async() => {
+      const result = await this.todoList.createTask("Software Development");
+      const taskCount = await this.todoList.taskCount();
+      assert.equal(taskCount.toNumber(), 2)
+      const event = result.logs[0].args;
+      assert.equal(event.ID.toNumber(), 2)
+      assert.equal(event.content, "Software Development")
+      assert.equal(event.completed, false)
    })
 })
