@@ -41,8 +41,10 @@ App = {
     },
 
     loadAccount: async() => {
-        App.account = web3.eth.accounts.givenProvider.selectedAddress;
-        console.log(App.account);
+        // App.account = web3.eth.accounts.givenProvider.selectedAddress;
+        const accounts = await web3.eth.getAccounts();
+        App.account = accounts[0];
+        // console.log(App.account);
     },
 
     loadContract: async() => {
@@ -102,9 +104,15 @@ App = {
         } else {
           $("#taskList").append($newTaskTemplate);
         }
-        console.log($newTaskTemplate)
         $newTaskTemplate.show();
       }
+    },
+
+    createTask: async() => {
+      App.setLoading(true);
+      const content = $("#newTask").val();
+      await App.todoList.createTask(content, {from: App.account});
+      window.location.reload();
     },
 
     setLoading: async(boolean) => {
